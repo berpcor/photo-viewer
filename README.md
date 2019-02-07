@@ -90,19 +90,19 @@ and run `carthage update` when you done this you can link it like Manual link fr
 
 #### Android
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
+1. Open up `android/app/src/main/java/[...]/MainApplication.java`
 
 * Add `import com.merryjs.PhotoViewer.MerryPhotoViewPackage;` to the imports at the top of the file
 * Add `new MerryPhotoViewPackage()` to the list returned by the `getPackages()` method
 
 2. Append the following lines to `android/settings.gradle`:
    ```
-   include ':@merryjs/photo-viewer'
-   project(':@merryjs/photo-viewer').projectDir = new File(rootProject.projectDir, 	'../node_modules/@merryjs/photo-viewer/android')
+   include ':@merryjs_photo-viewer'
+   project(':@merryjs_photo-viewer').projectDir = new File(rootProject.projectDir, 	'../node_modules/@merryjs/photo-viewer/android')
    ```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
    ```
-   compile project(':@merryjs/photo-viewer')
+   compile project(':@merryjs_photo-viewer')
    ```
 4. **Workaround for older gradles** please see https://github.com/merryjs/photo-viewer/issues/39
 
@@ -144,6 +144,10 @@ android {
 ```
 
 If we have any better solution will update this section in the future.
+*Update*
+Android Target API Level 26 required in August 2018 so you need:
+
+Open your android/build.gradle then node_modules/@merryjs/photo-viewer/android/build.gradle and check that versions in last file are the same as in the first one.
 
 #### Android Fresco initialize
 
@@ -247,6 +251,26 @@ For complete documentation please see https://merryjs.github.io/photo-viewer/int
 ## Known issues
 
 * IOS not support gif well when using imageLoader Please see https://github.com/facebook/react-native/issues/15427 any help are welcome. at this moment gif image on ios platform are only display the first frame and no animation.
+* You may have Dplicate Resources error. You need to add to your /node_modules/react-native/react.gradle:
+
+            doLast {
+                def moveFunc = { resSuffix ->
+                    File originalDir = file("$buildDir/generated/res/react/release/drawable-${resSuffix}");
+                    if (originalDir.exists()) {
+                        File destDir = file("$buildDir/../src/main/res/drawable-${resSuffix}");
+                        ant.move(file: originalDir, tofile: destDir);
+                    }
+                }
+                moveFunc.curry("ldpi").call()
+                moveFunc.curry("mdpi").call()
+                moveFunc.curry("hdpi").call()
+                moveFunc.curry("xhdpi").call()
+                moveFunc.curry("xxhdpi").call()
+                moveFunc.curry("xxxhdpi").call()
+           }
+right after doFirst.
+
+
 
 ## LICENSE
 
